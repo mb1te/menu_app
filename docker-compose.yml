@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - 5432:5432
+  
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.fastapi
+    command: uvicorn src.server:app --host ${FASTAPI_HOST} --port ${FASTAPI_PORT} --workers ${FASTAPI_WORKERS}
+    ports:
+      - ${FASTAPI_PORT}:${FASTAPI_PORT}
+    depends_on:
+      - db
